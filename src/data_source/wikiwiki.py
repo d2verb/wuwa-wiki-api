@@ -1,7 +1,10 @@
 from src.wuwa.resonator import Resonator
 from src.wuwa.attribute import Attribute
 from src.wuwa.weapon_type import WeaponType
+from src.wuwa.nation import Nation
 from src.data_source import DataParsingError
+from src.wuwa.resonator import ResonatorStory
+from typing import List
 from bs4 import BeautifulSoup
 import re
 import httpx
@@ -12,8 +15,10 @@ class WikiWikiDataSource:
     USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
     def get_resonator_by_name(self, name: str) -> Resonator:
-        weapon_type = None
-        attribute = None
+        weapon_type: WeaponType | None = None
+        attribute: Attribute | None = None
+        nation: Nation | None = None
+        stories: List[ResonatorStory] | None = None
 
         # parse character page
         wikitext = self._get_page_source(name)
@@ -25,11 +30,26 @@ class WikiWikiDataSource:
                 self._parse_weapon_type(line) if weapon_type is None else weapon_type
             )
             attribute = self._parse_attribute(line) if attribute is None else attribute
+            nation = self._parse_nation(line) if nation is None else nation
 
-        if not all([weapon_type, attribute]):
+        # parse character profile page
+        wikitext = self._get_page_source(f"{name}/プロフィール")
+        if wikitext is None:
+            raise DataParsingError(f"Failed to get resonator profile for {name}")
+
+        # parse story
+        stories = self._parse_stories(wikitext)
+
+        if not all([weapon_type, attribute, nation, stories]):
             raise DataParsingError(f"Failed to parse resonator data for {name}")
 
-        return Resonator(name=name, weapon_type=weapon_type, attribute=attribute)
+        return Resonator(
+            name=name,
+            weapon_type=weapon_type,
+            attribute=attribute,
+            nation=nation,
+            stories=stories,
+        )
 
     def _get_page_source(self, page: str) -> str | None:
         url = f"{self.BASE_URL}::cmd/source"
@@ -60,3 +80,27 @@ class WikiWikiDataSource:
         if m:
             return WeaponType(m.group(1).strip())
         return None
+
+    def _parse_nation(self, line: str) -> Nation | None:
+        m = re.search(r"\|~\|出身\|([^|]+)\|?", line)
+        if m:
+            return Nation(m.group(1).strip())
+        return None
+
+    def _parse_stories(self, wikitext: str) -> List[ResonatorStory] | None:
+        m = re.search(r"\*\*\*ストーリー \[#Story\](.*?)\*\*\*", wikitext, re.DOTALL)
+        if not m:
+            return None
+
+        story_text = m.group(1)
+        story_sections = re.findall(
+            r"&size\(14\)\{&#\d{5}; ''(.*?)''\};\s*(.*?)(?=(?:&size\(14\)\{&#\d{5};|----|\Z))",
+            story_text,
+            re.DOTALL,
+        )
+
+        stories: List[ResonatorStory] = []
+        for title, content in story_sections:
+            stories.append(ResonatorStory(title=title, content=content))
+
+        return stories

@@ -1,4 +1,4 @@
-from src.api.objects import Resonator
+from src.api.objects import Resonator, ResonatorStory
 from src.data_source.wikiwiki import WikiWikiDataSource
 
 
@@ -14,4 +14,9 @@ class ResonatorResolver:
             name=resonator.name,
             attribute=resonator.attribute.value,
             weapon_type=resonator.weapon_type.value,
+            nation=resonator.nation.value,
+            stories=map(
+                lambda s: ResonatorStory(title=s["title"], content=s["content"]),
+                resonator.stories,
+            ),
         )
