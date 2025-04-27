@@ -13,6 +13,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "isort>=6.0.1",
     "pyright>=1.1.400",
     "ruff>=0.11.7",
 ]

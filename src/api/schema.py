@@ -1,7 +1,9 @@
+from typing import List
+
 import strawberry
+
 from src.api.objects import Resonator
 from src.api.resolvers.resonator import ResonatorResolver
-from typing import List
 
 
 @strawberry.type

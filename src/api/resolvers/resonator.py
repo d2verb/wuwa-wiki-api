@@ -1,6 +1,7 @@
+from typing import List
+
 from src.api.objects import Resonator, ResonatorStory
 from src.data_source.wikiwiki import WikiWikiDataSource
-from typing import List
 
 
 class ResonatorResolver:

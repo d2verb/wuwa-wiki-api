@@ -1,13 +1,14 @@
-from src.wuwa.resonator import Resonator
-from src.wuwa.attribute import Attribute
-from src.wuwa.weapon_type import WeaponType
-from src.wuwa.nation import Nation
-from src.data_source import DataParsingError
-from src.wuwa.resonator import ResonatorStory
-from typing import List
-from bs4 import BeautifulSoup
 import re
+from typing import List
+
 import httpx
+from bs4 import BeautifulSoup
+
+from src.data_source import DataParsingError
+from src.wuwa.attribute import Attribute
+from src.wuwa.nation import Nation
+from src.wuwa.resonator import Resonator, ResonatorStory
+from src.wuwa.weapon_type import WeaponType
 
 
 class WikiWikiDataSource:

@@ -1,8 +1,9 @@
-from src.wuwa.attribute import Attribute
-from src.wuwa.weapon_type import WeaponType
-from src.wuwa.nation import Nation
-from typing import TypedDict, List
 import dataclasses
+from typing import List, TypedDict
+
+from src.wuwa.attribute import Attribute
+from src.wuwa.nation import Nation
+from src.wuwa.weapon_type import WeaponType
 
 
 class ResonatorStory(TypedDict):

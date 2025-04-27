@@ -1,4 +1,5 @@
-from typing import Protocol, List
+from typing import List, Protocol
+
 from src.wuwa.resonator import Resonator
 
 
