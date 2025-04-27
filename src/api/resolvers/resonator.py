@@ -12,6 +12,6 @@ class ResonatorResolver:
 
         return Resonator(
             name=resonator.name,
-            attribute=resonator.attribute.to_ja(),
-            weapon_type=resonator.weapon_type.to_ja(),
+            attribute=resonator.attribute.value,
+            weapon_type=resonator.weapon_type.value,
         )
