@@ -14,6 +14,23 @@ class WikiWikiDataSource:
     BASE_URL = "https://wikiwiki.jp/w-w/"
     USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
+    def get_resonators(self) -> List[str]:
+        wikitext = self._get_page_source("共鳴者一覧")
+        if wikitext is None:
+            raise DataParsingError("Failed to get resonator list")
+
+        return self._parse_resonators(wikitext)
+
+    def _parse_resonators(self, wikitext: str) -> List[str]:
+        resonators = []
+
+        for line in wikitext.splitlines():
+            m = re.search(r"\|\[?\[?&ref[^>]*>([^\]]+)\]", line)
+            if m:
+                resonators.append(m.group(1).strip())
+
+        return resonators
+
     def get_resonator_by_name(self, name: str) -> Resonator:
         weapon_type: WeaponType | None = None
         attribute: Attribute | None = None
