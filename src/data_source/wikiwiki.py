@@ -40,7 +40,13 @@ class WikiWikiDataSource:
         # parse story
         stories = self._parse_stories(wikitext)
 
-        if not all([weapon_type, attribute, nation, stories]):
+        # we can use all() here, but pyright can't narrow down the type if we do so
+        if (
+            weapon_type is None
+            or attribute is None
+            or nation is None
+            or stories is None
+        ):
             raise DataParsingError(f"Failed to parse resonator data for {name}")
 
         return Resonator(
@@ -65,9 +71,12 @@ class WikiWikiDataSource:
         r.raise_for_status()
 
         soup = BeautifulSoup(r.text, "html.parser")
-        wikitext = soup.select_one("#source > code").text
+        el = soup.select_one("#source > code")
 
-        return wikitext
+        if el is None:
+            return None
+
+        return el.text
 
     def _parse_attribute(self, line: str) -> Attribute | None:
         m = re.search(r"\|[^|]*\|属性\|[^;]*;([^|]+)\|?", line)

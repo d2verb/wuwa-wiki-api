@@ -16,3 +16,9 @@ Run the following command and then open your browser to access
 ```
 $ uv run fastapi dev main.py
 ```
+
+To run type checking, execute the following command.
+
+```
+$ uv run pyright
+```

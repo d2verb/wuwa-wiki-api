@@ -15,8 +15,8 @@ class ResonatorResolver:
             attribute=resonator.attribute.value,
             weapon_type=resonator.weapon_type.value,
             nation=resonator.nation.value,
-            stories=map(
-                lambda s: ResonatorStory(title=s["title"], content=s["content"]),
-                resonator.stories,
-            ),
+            stories=[
+                ResonatorStory(title=s["title"], content=s["content"])
+                for s in resonator.stories
+            ],
         )

@@ -13,5 +13,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.400",
     "ruff>=0.11.7",
 ]
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__"]
+typeCheckingMode = "basic"
