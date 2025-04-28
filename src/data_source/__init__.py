@@ -1,7 +1,7 @@
 from typing import List, Protocol
 
-from src.wuwa.resonator import Resonator
 from src.wuwa.echo import Echo
+from src.wuwa.resonator import Resonator
 
 
 class DataParsingError(Exception):

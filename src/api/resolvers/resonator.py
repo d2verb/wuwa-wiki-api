@@ -1,16 +1,18 @@
 from typing import List
 
+import strawberry
+
 from src.api.objects import Resonator, ResonatorStory
-from src.data_source.wikiwiki import WikiWikiDataSource
+from src.data_source import DataSource
 
 
 class ResonatorResolver:
-    def resonators(self) -> List[str]:
-        ds = WikiWikiDataSource()
+    def resonators(self, info: strawberry.Info) -> List[str]:
+        ds: DataSource = info.context["data_source"]
         return ds.get_resonators()
 
-    def resonator(self, name: str) -> Resonator | None:
-        ds = WikiWikiDataSource()
+    def resonator(self, name: str, info: strawberry.Info) -> Resonator | None:
+        ds: DataSource = info.context["data_source"]
         resonator = ds.get_resonator_by_name(name)
 
         if resonator is None:

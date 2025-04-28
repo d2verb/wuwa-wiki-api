@@ -6,11 +6,12 @@ from bs4 import BeautifulSoup
 
 from src.data_source import DataParsingError
 from src.wuwa.attribute import Attribute
+from src.wuwa.echo import Echo
+from src.wuwa.enemy_class import EnemyClass
 from src.wuwa.nation import Nation
 from src.wuwa.resonator import Resonator, ResonatorStory
 from src.wuwa.weapon_type import WeaponType
-from src.wuwa.echo import Echo
-from src.wuwa.enemy_class import EnemyClass
+
 
 class WikiWikiDataSource:
     BASE_URL = "https://wikiwiki.jp/w-w/"
@@ -42,7 +43,9 @@ class WikiWikiDataSource:
 
         for line in wikitext.splitlines():
             attribute = self._parse_attribute(line) if attribute is None else attribute
-            enemy_class = self._parse_enemy_class(line) if enemy_class is None else enemy_class
+            enemy_class = (
+                self._parse_enemy_class(line) if enemy_class is None else enemy_class
+            )
 
         description = self._parse_echo_description(wikitext)
 
@@ -63,7 +66,9 @@ class WikiWikiDataSource:
         return None
 
     def _parse_echo_description(self, wikitext: str) -> str | None:
-        m = re.search(r"ソラガイド発見済テキスト\s*\n([\s\S]*?)\n\}\}", wikitext, re.DOTALL)
+        m = re.search(
+            r"ソラガイド発見済テキスト\s*\n([\s\S]*?)\n\}\}", wikitext, re.DOTALL
+        )
         if m:
             return m.group(1).strip()
         return None

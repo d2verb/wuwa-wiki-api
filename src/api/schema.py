@@ -2,9 +2,9 @@ from typing import List
 
 import strawberry
 
-from src.api.objects import Resonator, Echo
-from src.api.resolvers.resonator import ResonatorResolver
+from src.api.objects import Echo, Resonator
 from src.api.resolvers.echoes import EchoResolver
+from src.api.resolvers.resonator import ResonatorResolver
 
 
 @strawberry.type

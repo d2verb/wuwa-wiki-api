@@ -1,7 +1,8 @@
+import dataclasses
+
 from src.wuwa.attribute import Attribute
 from src.wuwa.enemy_class import EnemyClass
 
-import dataclasses
 
 @dataclasses.dataclass
 class Echo:

@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.13.4",
+    "dependency-injector>=4.46.0",
     "fastapi[standard]>=0.115.12",
     "httpx>=0.28.1",
     "strawberry-graphql[fastapi]>=0.266.0",
