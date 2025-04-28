@@ -15,6 +15,21 @@ class WikiWikiDataSource:
     BASE_URL = "https://wikiwiki.jp/w-w/"
     USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
+    def get_echoes(self) -> List[str]:
+        wikitext = self._get_page_source("音骸一覧")
+        if wikitext is None:
+            raise DataParsingError("Failed to get echo list")
+
+        return self._parse_echoes(wikitext)
+
+    def _parse_echoes(self, wikitext: str) -> List[str]:
+        echoes = []
+        for line in wikitext.splitlines():
+            m = re.search(r";\|\[\[([^\]]+)\]\]\|\d", line)
+            if m:
+                echoes.append(m.group(1).strip())
+        return echoes
+
     def get_resonators(self) -> List[str]:
         wikitext = self._get_page_source("共鳴者一覧")
         if wikitext is None:
