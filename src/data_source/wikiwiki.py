@@ -9,7 +9,8 @@ from src.wuwa.attribute import Attribute
 from src.wuwa.nation import Nation
 from src.wuwa.resonator import Resonator, ResonatorStory
 from src.wuwa.weapon_type import WeaponType
-
+from src.wuwa.echo import Echo
+from src.wuwa.enemy_class import EnemyClass
 
 class WikiWikiDataSource:
     BASE_URL = "https://wikiwiki.jp/w-w/"
@@ -29,6 +30,43 @@ class WikiWikiDataSource:
             if m:
                 echoes.append(m.group(1).strip())
         return echoes
+
+    def get_echo_by_name(self, name: str) -> Echo | None:
+        attribute: Attribute | None = None
+        enemy_class: EnemyClass | None = None
+        description: str | None = None
+
+        wikitext = self._get_page_source(name)
+        if wikitext is None:
+            raise DataParsingError(f"Failed to get echo data for {name}")
+
+        for line in wikitext.splitlines():
+            attribute = self._parse_attribute(line) if attribute is None else attribute
+            enemy_class = self._parse_enemy_class(line) if enemy_class is None else enemy_class
+
+        description = self._parse_echo_description(wikitext)
+
+        if attribute is None or enemy_class is None or description is None:
+            raise DataParsingError(f"Failed to parse echo data for {name}")
+
+        return Echo(
+            name=name,
+            attribute=attribute,
+            enemy_class=enemy_class,
+            description=description,
+        )
+
+    def _parse_enemy_class(self, line: str) -> EnemyClass | None:
+        m = re.search(r"\|~\|クラス\|([^|]+)\|?", line)
+        if m:
+            return EnemyClass(m.group(1).strip())
+        return None
+
+    def _parse_echo_description(self, wikitext: str) -> str | None:
+        m = re.search(r"ソラガイド発見済テキスト\s*\n([\s\S]*?)\n\}\}", wikitext, re.DOTALL)
+        if m:
+            return m.group(1).strip()
+        return None
 
     def get_resonators(self) -> List[str]:
         wikitext = self._get_page_source("共鳴者一覧")

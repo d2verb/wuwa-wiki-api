@@ -16,3 +16,11 @@ class Resonator:
     weapon_type: str
     nation: str
     stories: List[ResonatorStory]
+
+
+@strawberry.type
+class Echo:
+    name: str
+    attribute: str
+    enemy_class: str
+    description: str
