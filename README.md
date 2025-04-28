@@ -22,3 +22,9 @@ To run type checking, execute the following command.
 ```
 $ uv run pyright
 ```
+
+To export GraphQL schema, execute the following command.
+
+```
+$ uv run strawberry export-schema src.api:schema > schema.graphql
+```
