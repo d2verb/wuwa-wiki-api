@@ -3,8 +3,7 @@ from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
 
 from src.api.di import DIContainer, get_context
-from src.api.schema import Query
-
+from src.api.schema import Query, schema
 
 def create_app() -> FastAPI:
     app = FastAPI()
@@ -13,7 +12,6 @@ def create_app() -> FastAPI:
     container.wire(modules=[__name__])
     app.container = container  # type: ignore
 
-    schema = strawberry.Schema(query=Query)
     graphql_app = GraphQLRouter(schema, context_getter=get_context)
     app.include_router(graphql_app, prefix="/graphql")
 

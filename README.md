@@ -7,6 +7,7 @@ wiki pages as its data source.
 
 - Python 3.12 or higher
 - uv
+- Taskfile
 
 ## Quick Start
 
@@ -14,17 +15,17 @@ Run the following command and then open your browser to access
 `http://127.0.0.1/graphql`.
 
 ```
-$ uv run fastapi dev main.py
+$ task run
 ```
 
 To run type checking, execute the following command.
 
 ```
-$ uv run pyright
+$ task tyepcheck
 ```
 
 To export GraphQL schema, execute the following command.
 
 ```
-$ uv run strawberry export-schema src.api:schema > schema.graphql
+$ task export-graphql
 ```

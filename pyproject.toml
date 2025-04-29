@@ -21,6 +21,6 @@ dev = [
 ]
 
 [tool.pyright]
-include = ["src"]
+include = ["src", "main.py"]
 exclude = ["**/__pycache__"]
 typeCheckingMode = "basic"

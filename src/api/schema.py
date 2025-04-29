@@ -13,3 +13,5 @@ class Query:
     resonator: Resonator | None = strawberry.field(resolver=ResonatorResolver.resonator)
     echoes: List[str] = strawberry.field(resolver=EchoResolver.echoes)
     echo: Echo | None = strawberry.field(resolver=EchoResolver.echo)
+
+schema = strawberry.Schema(query=Query)

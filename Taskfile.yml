@@ -1,0 +1,18 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  format:
+    cmds:
+      - uv run ruff format
+      - uv run isort src/**/*.py main.py
+  typecheck:
+    cmds:
+      - uv run pyright
+  run:
+    cmds:
+      - uv run fastapi dev main.py
+  export-graphql:
+    cmds:
+      - uv run strawberry export-schema src.api.schema:schema --output schema.graphql
