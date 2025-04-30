@@ -131,10 +131,26 @@ class WikiWikiDataSource:
     def _parse_resonators(self, wikitext: str) -> List[str]:
         resonators = []
 
+        is_parsing = False
+
         for line in wikitext.splitlines():
-            m = re.search(r"\|\[?\[?&ref[^>]*>([^\]]+)\]", line)
-            if m:
-                resonators.append(m.group(1).strip())
+            if line.startswith("*共鳴者一覧"):
+                is_parsing = True
+                continue
+
+            if is_parsing and line.startswith("}}"):
+                is_parsing = False
+                break
+
+            if not is_parsing:
+                continue
+
+            m = re.search(r"^\|\[?\[?&ref[^\|]*?\|\[?\[?([^>]*?>)?([^\]]*?)\]?\]?\|", line)
+            if not m:
+                continue
+
+            candidate = m.group(2).strip()
+            resonators.append(candidate)
 
         return resonators
 

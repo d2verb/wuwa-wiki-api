@@ -9,6 +9,7 @@ dependencies = [
     "dependency-injector>=4.46.0",
     "fastapi[standard]>=0.115.12",
     "httpx>=0.28.1",
+    "pytest>=8.3.5",
     "strawberry-graphql[fastapi]>=0.266.0",
 ]
 
