@@ -1,4 +1,5 @@
 import re
+import html
 from typing import List
 
 from src.data_source import DataParsingError, DataNotFound
@@ -212,7 +213,9 @@ class WikiWikiDataSource:
     def _parse_nation(self, line: str) -> Nation | None:
         m = re.search(r"\|~\|出身\|([^|]+)\|?", line)
         if m:
-            return Nation(m.group(1).strip())
+            nation = html.unescape(m.group(1).strip())
+            nation = "瑝瓏" if nation == "瑝龍" else nation # "瑝龍" is wrong. text in game is "瑝瓏"
+            return Nation(nation)
         return None
 
     def _parse_stories(self, wikitext: str) -> List[ResonatorStory] | None:
