@@ -29,3 +29,9 @@ To export GraphQL schema, execute the following command.
 ```
 $ task export-graphql
 ```
+
+To run tests, execute the following command.
+
+```
+$ task test
+```

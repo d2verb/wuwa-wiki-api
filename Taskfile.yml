@@ -16,3 +16,6 @@ tasks:
   export-graphql:
     cmds:
       - uv run strawberry export-schema src.api.schema:schema --output schema.graphql
+  test:
+    cmds:
+      - uv run pytest
