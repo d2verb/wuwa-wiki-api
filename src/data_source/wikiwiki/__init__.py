@@ -1,9 +1,6 @@
 import re
 from typing import List
 
-import httpx
-from bs4 import BeautifulSoup
-
 from src.data_source import DataParsingError, DataNotFound
 from src.wuwa.archive import Archive
 from src.wuwa.attribute import Attribute
@@ -13,16 +10,19 @@ from src.wuwa.nation import Nation
 from src.wuwa.resonator import Resonator, ResonatorStory
 from src.wuwa.weapon_type import WeaponType
 
+from src.data_source.wikiwiki.http_client import HttpClient, WikiWikiHttpClient
+
 
 class WikiWikiDataSource:
-    BASE_URL = "https://wikiwiki.jp/w-w/"
-    USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    client: HttpClient
+
+    def __init__(self, client: HttpClient = WikiWikiHttpClient()) -> None:
+        self.client = client
 
     def get_archives(self) -> List[str]:
-        wikitext = self._get_page_source("ソラリス辞典")
+        wikitext = self.client.get_page_source("ソラリス辞典")
         if wikitext is None:
             raise DataNotFound("Failed to get archive list")
-
         return self._parse_archives(wikitext)
 
     def _parse_archives(self, wikitext: str) -> List[str]:
@@ -34,7 +34,7 @@ class WikiWikiDataSource:
         return archives
 
     def get_archive_by_title(self, title: str) -> Archive | None:
-        wikitext = self._get_page_source("ソラリス辞典")
+        wikitext = self.client.get_page_source("ソラリス辞典")
         if wikitext is None:
             raise DataNotFound(f"Failed to get archive data for {title}")
 
@@ -66,7 +66,7 @@ class WikiWikiDataSource:
         return Archive(title=title, content="\n".join(lines))
 
     def get_echoes(self) -> List[str]:
-        wikitext = self._get_page_source("音骸一覧")
+        wikitext = self.client.get_page_source("音骸一覧")
         if wikitext is None:
             raise DataNotFound("Failed to get echo list")
 
@@ -85,7 +85,7 @@ class WikiWikiDataSource:
         enemy_class: EnemyClass | None = None
         description: str | None = None
 
-        wikitext = self._get_page_source(name)
+        wikitext = self.client.get_page_source(name)
         if wikitext is None:
             raise DataNotFound(f"Failed to get echo data for {name}")
 
@@ -122,7 +122,7 @@ class WikiWikiDataSource:
         return None
 
     def get_resonators(self) -> List[str]:
-        wikitext = self._get_page_source("共鳴者一覧")
+        wikitext = self.client.get_page_source("共鳴者一覧")
         if wikitext is None:
             raise DataNotFound("Failed to get resonator list")
 
@@ -145,7 +145,7 @@ class WikiWikiDataSource:
         stories: List[ResonatorStory] | None = None
 
         # parse character page
-        wikitext = self._get_page_source(name)
+        wikitext = self.client.get_page_source(name)
         if wikitext is None:
             raise DataNotFound(f"Failed to get resonator data for {name}")
 
@@ -157,7 +157,7 @@ class WikiWikiDataSource:
             nation = self._parse_nation(line) if nation is None else nation
 
         # parse character profile page
-        wikitext = self._get_page_source(f"{name}/プロフィール")
+        wikitext = self.client.get_page_source(f"{name}/プロフィール")
         if wikitext is None:
             raise DataNotFound(f"Failed to get resonator profile for {name}")
 
@@ -180,27 +180,6 @@ class WikiWikiDataSource:
             nation=nation,
             stories=stories,
         )
-
-    def _get_page_source(self, page: str) -> str | None:
-        url = f"{self.BASE_URL}::cmd/source"
-        r = httpx.get(
-            url,
-            params={"page": page},
-            headers={"User-Agent": self.USER_AGENT},
-        )
-
-        if r.status_code == httpx.codes.NOT_FOUND:
-            return None
-
-        r.raise_for_status()
-
-        soup = BeautifulSoup(r.text, "html.parser")
-        el = soup.select_one("#source > code")
-
-        if el is None:
-            return None
-
-        return el.text
 
     def _parse_attribute(self, line: str) -> Attribute | None:
         m = re.search(r"\|[^|]*\|属性\|[^;]*;([^|]+)\|?", line)
