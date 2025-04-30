@@ -218,7 +218,7 @@ class WikiWikiDataSource:
             nation = html.unescape(m.group(1).strip())
             nation = (
                 "瑝瓏" if nation == "瑝龍" else nation
-            )  # "瑝龍" is wrong. text in game is "瑝瓏"
+            )  # "瑝龍" is a wrong word. wuwa uses "瑝瓏" in the game.
             return Nation(nation)
         return None
 
