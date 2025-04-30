@@ -1,5 +1,6 @@
 from src.data_source.wikiwiki import WikiWikiDataSource, WikiWikiHttpClient
 
+
 class TestWikiWikiDatasource:
     def test_get_resonators(self):
         class MockHttpClient:

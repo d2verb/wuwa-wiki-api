@@ -1,11 +1,13 @@
 from typing import List, Protocol
 
+from src.wuwa.archive import Archive
 from src.wuwa.echo import Echo
 from src.wuwa.resonator import Resonator
-from src.wuwa.archive import Archive
+
 
 class DataParsingError(Exception):
     pass
+
 
 class DataNotFound(Exception):
     pass

@@ -2,10 +2,11 @@ from typing import List
 
 import strawberry
 
-from src.api.objects import Echo, Resonator, Archive
+from src.api.objects import Archive, Echo, Resonator
+from src.api.resolvers.archive import ArchiveResolver
 from src.api.resolvers.echoes import EchoResolver
 from src.api.resolvers.resonator import ResonatorResolver
-from src.api.resolvers.archive import ArchiveResolver
+
 
 @strawberry.type
 class Query:
@@ -15,5 +16,6 @@ class Query:
     echo: Echo | None = strawberry.field(resolver=EchoResolver.echo)
     archives: List[str] = strawberry.field(resolver=ArchiveResolver.archives)
     archive: Archive | None = strawberry.field(resolver=ArchiveResolver.archive)
+
 
 schema = strawberry.Schema(query=Query)

@@ -2,9 +2,10 @@ import httpx
 from bs4 import BeautifulSoup
 from typing import Protocol
 
+
 class HttpClient(Protocol):
-    def get_page_source(self, page_title: str) -> str | None:
-        ...
+    def get_page_source(self, page_title: str) -> str | None: ...
+
 
 class WikiWikiHttpClient:
     BASE_URL = "https://wikiwiki.jp/w-w/"

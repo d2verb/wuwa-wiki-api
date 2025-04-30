@@ -5,6 +5,7 @@ from strawberry.fastapi import GraphQLRouter
 from src.api.di import DIContainer, get_context
 from src.api.schema import Query, schema
 
+
 def create_app() -> FastAPI:
     app = FastAPI()
 

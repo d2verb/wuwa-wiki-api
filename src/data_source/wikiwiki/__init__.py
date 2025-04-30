@@ -146,7 +146,9 @@ class WikiWikiDataSource:
             if not is_parsing:
                 continue
 
-            m = re.search(r"^\|\[?\[?&ref[^\|]*?\|\[?\[?([^>]*?>)?([^\]]*?)\]?\]?\|", line)
+            m = re.search(
+                r"^\|\[?\[?&ref[^\|]*?\|\[?\[?([^>]*?>)?([^\]]*?)\]?\]?\|", line
+            )
             if not m:
                 continue
 
@@ -214,7 +216,9 @@ class WikiWikiDataSource:
         m = re.search(r"\|~\|出身\|([^|]+)\|?", line)
         if m:
             nation = html.unescape(m.group(1).strip())
-            nation = "瑝瓏" if nation == "瑝龍" else nation # "瑝龍" is wrong. text in game is "瑝瓏"
+            nation = (
+                "瑝瓏" if nation == "瑝龍" else nation
+            )  # "瑝龍" is wrong. text in game is "瑝瓏"
             return Nation(nation)
         return None
 
