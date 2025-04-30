@@ -24,3 +24,9 @@ class Echo:
     attribute: str
     enemy_class: str
     description: str
+
+
+@strawberry.type
+class Archive:
+    title: str
+    content: str

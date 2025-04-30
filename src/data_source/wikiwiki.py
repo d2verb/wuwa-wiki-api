@@ -4,7 +4,8 @@ from typing import List
 import httpx
 from bs4 import BeautifulSoup
 
-from src.data_source import DataParsingError
+from src.data_source import DataParsingError, DataNotFound
+from src.wuwa.archive import Archive
 from src.wuwa.attribute import Attribute
 from src.wuwa.echo import Echo
 from src.wuwa.enemy_class import EnemyClass
@@ -17,10 +18,57 @@ class WikiWikiDataSource:
     BASE_URL = "https://wikiwiki.jp/w-w/"
     USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
+    def get_archives(self) -> List[str]:
+        wikitext = self._get_page_source("ソラリス辞典")
+        if wikitext is None:
+            raise DataNotFound("Failed to get archive list")
+
+        return self._parse_archives(wikitext)
+
+    def _parse_archives(self, wikitext: str) -> List[str]:
+        archives = []
+        for line in wikitext.splitlines():
+            m = re.search(r"\*\*([^\[]+)\[", line)
+            if m:
+                archives.append(m.group(1).strip())
+        return archives
+
+    def get_archive_by_title(self, title: str) -> Archive | None:
+        wikitext = self._get_page_source("ソラリス辞典")
+        if wikitext is None:
+            raise DataNotFound(f"Failed to get archive data for {title}")
+
+        archive = self._parse_archive(wikitext, title)
+        if archive is None:
+            raise DataParsingError(f"Failed to parse archive data for {title}")
+
+        return archive
+
+    def _parse_archive(self, wikitext: str, title: str) -> Archive | None:
+        is_parsing = False
+        lines = []
+
+        for line in wikitext.splitlines():
+            if not is_parsing and line.startswith(f"**{title}"):
+                is_parsing = True
+                continue
+
+            if is_parsing and line.startswith("**"):
+                is_parsing = False
+                break
+
+            if is_parsing:
+                lines.append(line)
+
+        if len(lines) == 0:
+            return None
+
+        return Archive(title=title, content="\n".join(lines))
+
     def get_echoes(self) -> List[str]:
         wikitext = self._get_page_source("音骸一覧")
         if wikitext is None:
-            raise DataParsingError("Failed to get echo list")
+            raise DataNotFound("Failed to get echo list")
 
         return self._parse_echoes(wikitext)
 
@@ -39,7 +87,7 @@ class WikiWikiDataSource:
 
         wikitext = self._get_page_source(name)
         if wikitext is None:
-            raise DataParsingError(f"Failed to get echo data for {name}")
+            raise DataNotFound(f"Failed to get echo data for {name}")
 
         for line in wikitext.splitlines():
             attribute = self._parse_attribute(line) if attribute is None else attribute
@@ -76,7 +124,7 @@ class WikiWikiDataSource:
     def get_resonators(self) -> List[str]:
         wikitext = self._get_page_source("共鳴者一覧")
         if wikitext is None:
-            raise DataParsingError("Failed to get resonator list")
+            raise DataNotFound("Failed to get resonator list")
 
         return self._parse_resonators(wikitext)
 
@@ -99,7 +147,7 @@ class WikiWikiDataSource:
         # parse character page
         wikitext = self._get_page_source(name)
         if wikitext is None:
-            raise DataParsingError(f"Failed to get resonator data for {name}")
+            raise DataNotFound(f"Failed to get resonator data for {name}")
 
         for line in wikitext.splitlines():
             weapon_type = (
@@ -111,7 +159,7 @@ class WikiWikiDataSource:
         # parse character profile page
         wikitext = self._get_page_source(f"{name}/プロフィール")
         if wikitext is None:
-            raise DataParsingError(f"Failed to get resonator profile for {name}")
+            raise DataNotFound(f"Failed to get resonator profile for {name}")
 
         # parse story
         stories = self._parse_stories(wikitext)
